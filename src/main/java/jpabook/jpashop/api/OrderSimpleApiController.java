@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * xToOne 관계 (ManyToOne, OneToOne)
@@ -37,10 +38,21 @@ public class OrderSimpleApiController {
 
     @GetMapping("/api/v2/simple-orders")
     public List<SimpleOrderDto> ordersV2() {
+        // ORDER 2개
+        // N + 1 -> 1 + 회원 N + 배송 N
         List<Order> orders = orderRepository.findAllByCriteria(new OrderSearch());
         return orders.stream()
                 .map(SimpleOrderDto::new)
                 .toList();
+    }
+
+    @GetMapping("/api/v3/simple-orders")
+    public List<SimpleOrderDto> ordersV3() {
+        List<Order> orders = orderRepository.findAllWithMemberDelivery();
+        List<SimpleOrderDto> result = orders.stream()
+                .map(o -> new SimpleOrderDto(o))
+                .collect(Collectors.toList());
+        return result;
     }
 
     @Data
