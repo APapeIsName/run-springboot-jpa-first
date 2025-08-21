@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,16 @@ public class OrderApiController {
     @GetMapping("/api/v2/orders")
     public List<OrderDto> ordersV2() {
         List<Order> orders = orderRepository.findAllByCriteria(new OrderSearch());
+        List<OrderDto> result = orders.stream()
+                .map(o -> new OrderDto(o))
+                .toList();
+
+        return result;
+    }
+
+    @GetMapping("/api/v3/orders")
+    public List<OrderDto> ordersV3() {
+        List<Order> orders = orderRepository.findAllWithItem();
         List<OrderDto> result = orders.stream()
                 .map(o -> new OrderDto(o))
                 .toList();
